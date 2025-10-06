@@ -12,9 +12,6 @@ CONFIG_IPV4=yes
 DISABLED=no
 TYPE=eth" > /etc/net/ifaces/ens20/options
 
-cp /etc/net/ifaces/ens20/options /etc/net/ifaces/ens21/options
-cp /etc/net/ifaces/ens20/options /etc/net/ifaces/ens22/options
-
 echo "BOOTPROTO=static
 CONFIG_IPV4=yes
 DISABLED=no
