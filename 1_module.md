@@ -241,6 +241,33 @@ server=/au-team.irpo/192.168.3.10" > /etc/dnsmasq.conf
 systemctl restart dnsmasq
 exec bash
 ```
+**BR-SRV**
+```tcl
+hostnamectl set-hostname BR-SRV.au-team.irpo
+mkdir -p /etc/net/ifaces/ens20
+echo "BOOTPROTO=static
+CONFIG_IPV4=yes
+DISABLED=no
+TYPE=eth" > /etc/net/ifaces/ens20/options
+echo "192.168.3.10/28" > /etc/net/ifaces/ens20/ipv4address
+echo "default via 192.168.3.1" > /etc/net/ifaces/ens20/ipv4route
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+systemctl restart network
+useradd remote_user -u 2026
+sed -i 's/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/' /etc/sudoers
+echo -e "P@ssw0rd\nP@ssw0rd" | passwd remote_user
+gpasswd -a remote_user wheel
+mkdir -p /etc/openssh
+echo "Port 2026
+AllowUsers remote_user
+MaxAuthTries 2
+PasswordAuthentication yes
+Banner /etc/openssh/banner" > /etc/openssh/sshd_config
+echo "Authorized access only" > /etc/openssh/banner
+systemctl restart sshd
+timedatectl set-timezone Asia/Yekaterinburg
+exec bash
+```
 **HQ-CLI**
 ```tcl
 hostnamectl set-hostname HQ-CLI.au-team.irpo
