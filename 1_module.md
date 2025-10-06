@@ -123,7 +123,6 @@ ip nat pool NAT_POOL 192.168.1.1-192.168.1.254,192.168.2.1-192.168.2.254
 ip nat source dynamic inside-to-outside pool NAT_POOL overload interface int0
 write memory
 ntp timezone utc+5
-show ntp timezone
 write memory
 ip pool cli_pool 192.168.2.10-192.168.2.10
 dhcp-server 1
