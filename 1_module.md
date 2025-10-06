@@ -240,3 +240,14 @@ address=/docker.au-team.irpo/172.16.2.1
 server=/au-team.irpo/192.168.3.10" > /etc/dnsmasq.conf
 systemctl restart dnsmasq
 exec bash
+```
+**HQ-CLI**
+```tcl
+hostnamectl set-hostname HQ-CLI.au-team.irpo
+mkdir -p /etc/net/ifaces/ens20
+echo "BOOTPROTO=dhcp
+TYPE=eth" > /etc/net/ifaces/ens20/options
+systemctl restart network
+timedatectl set-timezone Asia/Yekaterinburg
+exec bash
+```
