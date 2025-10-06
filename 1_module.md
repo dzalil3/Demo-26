@@ -140,3 +140,65 @@ dhcp-server 1
 write
 exit
 ```
+**BR-RTR**
+```tcl
+en
+conf t
+hostname BR-RTR
+interface int0
+description "to isp"
+ip address 172.16.2.2/28
+exit
+port te0
+service-instance te0/int0
+encapsulation untagged
+exit
+exit
+interface int0
+connect port te0 service-instance te0/int0
+exit
+interface int1
+description "to br-srv"
+ip address 192.168.3.1/28
+exit
+port te1
+service-instance te1/int1
+encapsulation untagged
+exit
+exit
+interface int1
+connect port te1 service-instance te1/int1
+exit
+ip route 0.0.0.0 0.0.0.0 172.16.2.1
+write memory
+username net_admin
+password P@ssw0rd
+role admin
+exit
+write memory
+interface tunnel.0
+ip address 172.16.0.2/30
+ip mtu 1400
+ip tunnel 172.16.2.2 172.16.1.2 mode gre
+ip ospf authentication-key ecorouter
+exit
+write memory
+router ospf 1
+network 172.16.0.0/30 area 0
+network 192.168.3.0/27 area 0
+passive-interface default
+no passive-interface tunnel.0
+area 0 authentication
+exit
+write memory
+interface int1
+ip nat inside
+exit
+interface int0
+ip nat outside
+exit
+ip nat pool NAT_POOL 192.168.3.1-192.168.3.254
+ip nat source dynamic inside-to-outside overload interface int0
+ntp timezone utc+5
+write memory
+```
