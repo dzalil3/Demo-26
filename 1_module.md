@@ -6,25 +6,20 @@ hostnamectl hostname ISP
 mkdir -p /etc/net/ifaces/ens20
 mkdir -p /etc/net/ifaces/ens21
 mkdir -p /etc/net/ifaces/ens22
-
 echo "BOOTPROTO=dhcp
 CONFIG_IPV4=yes
 DISABLED=no
 TYPE=eth" > /etc/net/ifaces/ens20/options
-
 echo "BOOTPROTO=static
 CONFIG_IPV4=yes
 DISABLED=no
 TYPE=eth" > /etc/net/ifaces/ens21/options
-
 echo "BOOTPROTO=static
 CONFIG_IPV4=yes
 DISABLED=no
 TYPE=eth" > /etc/net/ifaces/ens22/options
-
 echo "172.16.1.1/28" > /etc/net/ifaces/ens21/ipv4address
 echo "172.16.2.1/28" > /etc/net/ifaces/ens22/ipv4address
-
 sed -i 's/net.ipv4.ip_forward = 0/net.ipv4.ip_forward = 1/' /etc/net/sysctl.conf
 systemctl restart network
 apt-get update && apt-get install iptables -y && apt-get reinstall tzdata -y
@@ -202,3 +197,46 @@ ip nat source dynamic inside-to-outside pool NAT_POOL overload interface int0
 ntp timezone utc+5
 write memory
 ```
+**HQ-SRV**
+```tcl
+hostnamectl set-hostname HQ-SRV.au-team.irpo
+mkdir -p /etc/net/ifaces/ens20
+echo "BOOTPROTO=static
+CONFIG_IPV4=yes
+DISABLED=no
+TYPE=eth" > /etc/net/ifaces/ens20/options
+echo "192.168.1.10/27" > /etc/net/ifaces/ens20/ipv4address
+echo "default via 192.168.1.1" > /etc/net/ifaces/ens20/ipv4route
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+systemctl restart network
+useradd remote_user -u 2026
+sed -i 's/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/' /etc/sudoers
+echo -e "P@ssw0rd\nP@ssw0rd" | passwd remote_user
+gpasswd -a remote_user wheel
+echo "Port 2026
+AllowUsers remote_user
+MaxAuthTries 2
+PasswordAuthentication yes
+Banner /etc/openssh/banner" > /etc/openssh/sshd_config
+echo "Authorized access only" > /etc/openssh/banner
+systemctl restart sshd
+timedatectl set-timezone Asia/Yekaterinburg
+apt-get update
+apt-get install dnsmasq -y
+systemctl enable --now dnsmasq
+echo "no-resolv
+domain=au-team.irpo
+server=8.8.8.8
+interface=*
+address=/hq-rtr.au-team.irpo/192.168.1.1
+address=/br-rtr.au-team.irpo/192.168.3.1
+address=/hq-srv.au-team.irpo/192.168.1.10
+ptr-record=10.1.168.192.in-addr.arpa,hq-srv.au-team.irpo
+address=/hq-cli.au-team.irpo/192.168.2.10
+ptr-record=10.2.168.192.in-addr.arpa,hq-cli.au-team.irpo
+address=/br-srv.au-team.irpo/192.168.3.10
+address=/web.au-team.irpo/172.16.1.1
+address=/docker.au-team.irpo/172.16.2.1
+server=/au-team.irpo/192.168.3.10" > /etc/dnsmasq.conf
+systemctl restart dnsmasq
+exec bash
