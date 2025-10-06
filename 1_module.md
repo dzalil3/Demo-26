@@ -126,7 +126,7 @@ ntp timezone utc+5
 write memory
 ip pool cli_pool 192.168.2.10-192.168.2.10
 dhcp-server 1
-ip pool cli_pool 1
+pool cli_pool 1
 mask 255.255.255.240
 gateway 192.168.2.1
 dns 192.168.1.10
@@ -135,6 +135,7 @@ exit
 exit
 interface int2
 dhcp-server 1
-write memory
-exit
+write
+exi t
+
 ```
