@@ -1,6 +1,6 @@
 # Настройка устройств
 
-## ISP
+**ISP**
 ```tcl 
 hostnamectl hostname ISP
 mkdir -p /etc/net/ifaces/ens20
