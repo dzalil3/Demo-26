@@ -99,6 +99,7 @@ touch /mnt/nfs/test
 
 **ISP**
 ```tcl
+apt-get update
 apt-get install chrony -y
 echo "server 127.0.0.1 iburst prefer
 hwtimestamp *
