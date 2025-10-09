@@ -1,4 +1,5 @@
-==Доменный контроллер Samba==
+###Доменный контроллер samba
+
 **BR-SRV**
 ```tcl
 apt-get update && apt-get install wget dos2unix task-samba-dc -y
