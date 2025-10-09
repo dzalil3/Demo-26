@@ -52,6 +52,6 @@ expect "sudoCommand:"
 send "/bin/cat\r"
 expect "sudoUser:"
 send "%hq\r"
-```
 expect eof
 EOF
+```
