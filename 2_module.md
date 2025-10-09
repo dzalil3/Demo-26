@@ -95,6 +95,15 @@ mount -a
 mount -v
 touch /mnt/nfs/test
 ```
+###Chrony
+**ISP**
+```tcl
+apt-get install chrony -y
+echo "server 127.0.0.1 iburst prefer
+hwtimestamp *
+local stratum 5
+allow 0/0
+```
 
 
 
