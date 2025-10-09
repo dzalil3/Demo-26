@@ -1,6 +1,7 @@
 ```tcl
-apt-get repo add http://altrepo.ru/local-p10 noarch local-p10
-apt-get update && apt-get install task-samba-dc sudo-samba-schema expect -y
+apt-repo add http://altrepo.ru/local-p10 noarch local-p10
+apt-get update
+apt-get install task-samba-dc sudo-samba-schema expect -y
 echo "nameserver 192.168.1.10" > /etc/resolv.conf
 rm -rf /etc/samba/smb.conf
 expect << 'EOF'
