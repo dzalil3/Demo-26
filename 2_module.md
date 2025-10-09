@@ -1,4 +1,7 @@
+
 ```tcl
+#Samba
+**BR-SRV**
 apt-get update && apt-get install wget dos2unix task-samba-dc -y
 sleep 3
 echo nameserver 192.168.1.10 >> /etc/resolv.conf
