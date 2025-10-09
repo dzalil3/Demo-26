@@ -41,14 +41,10 @@ systemctl enable --now samba
 expect << 'EOF'
 set timeout 30
 spawn create-sudo-rule
-expect "Логин:"
-send "Administrator\r"
-expect "Пароль:"
-send "P@ssw0rd\r"
-expect "Пароль повторно:"
-send "P@ssw0rd\r"
 expect "Имя правила:"
 send "prava_hq\r"
+expect "sudoHost:"
+send "ALL\r"
 expect "sudoCommand:"
 send "/bin/cat\r"
 expect "sudoUser:"
