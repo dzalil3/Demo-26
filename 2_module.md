@@ -99,12 +99,18 @@ touch /mnt/nfs/test
 
 **ISP**
 ```tcl
-apt-get update
 apt-get install chrony -y
-echo "server 127.0.0.1 iburst prefer
+cat > /etc/chrony.conf << 'EOF'
+server 127.0.0.1 iburst prefer
 hwtimestamp *
 local stratum 5
 allow 0/0
+driftfile /var/lib/chrony/drift
+logdir /var/log/chrony
+EOF
+systemctl enable --now chronyd
+systemctl restart chronyd
+chronyc sources
 ```
 
 
