@@ -42,12 +42,43 @@ expect << 'EOF'
 set timeout 30
 spawn create-sudo-rule
 expect "Имя правила:"
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete  
+send "\033[3~"  # Delete
 send "prava_hq\r"
 expect "sudoHost:"
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
 send "ALL\r"
 expect "sudoCommand:"
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
 send "/bin/cat\r"
 expect "sudoUser:"
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
+send "\033[3~"  # Delete
 send "%hq\r"
 expect eof
 EOF
