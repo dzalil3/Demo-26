@@ -19,7 +19,7 @@ samba-tool user create user3.hq P@ssw0rd
 samba-tool user create user4.hq P@ssw0rd
 samba-tool user create user5.hq P@ssw0rd
 samba-tool group add hq
-samba-tool group addmembers hq user1.hq,user2.hq,user3.hq,user4.hq,user5.hq
+samba-tool group addmembers hq hquser1,hquser2,hquser3,hquser4,hquser5
 systemctl enable --now samba
 expect << EOF
 spawn create-sudo-rule
