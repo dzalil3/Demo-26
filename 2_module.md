@@ -30,6 +30,7 @@ expect {
 expect eof
 EOF
 mv -f /var/lib/samba/private/krb5.conf /etc/krb5.conf
+systemctl enable --now samba
 samba-tool user create hquser1 P@ssw0rd
 samba-tool user create hquser2 P@ssw0rd
 samba-tool user create hquser3 P@ssw0rd
@@ -37,48 +38,20 @@ samba-tool user create hquser4 P@ssw0rd
 samba-tool user create hquser5 P@ssw0rd
 samba-tool group add hq
 samba-tool group addmembers hq hquser1,hquser2,hquser3,hquser4,hquser5
-systemctl enable --now samba
 expect << 'EOF'
 set timeout 30
 spawn create-sudo-rule
 expect "Имя правила:"
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete  
-send "\033[3~"  # Delete
+send "\b\b\b"
 send "prava_hq\r"
 expect "sudoHost:"
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
+send "\b\b\b"
 send "ALL\r"
 expect "sudoCommand:"
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
+send "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
 send "/bin/cat\r"
 expect "sudoUser:"
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
-send "\033[3~"  # Delete
+send "\b\b\b\b\b\b\b\b"
 send "%hq\r"
 expect eof
 EOF
