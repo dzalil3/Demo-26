@@ -95,8 +95,9 @@ mount -a
 mount -v
 touch /mnt/nfs/test
 ```
-**ISP**
 ###Chrony
+
+**ISP**
 ```tcl
 apt-get install chrony -y
 cat > /etc/chrony.conf << 'EOF'
@@ -115,16 +116,15 @@ chronyc sources
 **HQ-CLI**
 ```tcl
 useradd remote_user -u 2026
-echo -e "P@ssw0rd\nP@ssw0rd" | passwd remote_user
 sed -i 's/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/' /etc/sudoers
+echo -e "P@ssw0rd\nP@ssw0rd" | passwd remote_user
 gpasswd -a remote_user wheel
-mkdir -p /etc/openssh
 echo "Port 2026
-PasswordAuthentication yes
 AllowUsers remote_user
+MaxAuthTries 2
+PasswordAuthentication yes
 Banner /etc/openssh/banner" > /etc/openssh/sshd_config
-echo "Authorized access only!" > /etc/openssh/banner
-systemctl restart sshd
+echo "Authorized access only" > /etc/openssh/banner
 ```
 
 **BR-SRV**
