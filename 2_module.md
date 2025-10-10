@@ -44,6 +44,8 @@ ldbadd -H /var/lib/samba/private/sam.ldb sudoRole-object.ldif
 echo -e "dn: CN=prava_hq,OU=sudoers,DC=au-team,DC=irpo\nchangetype: modify\nreplace: nTSecurityDescriptor" > ntGen.ldif
 ldbsearch  -H /var/lib/samba/private/sam.ldb -s base -b 'CN=prava_hq,OU=sudoers,DC=au-team,DC=irpo' 'nTSecurityDescriptor' | sed -n '/^#/d;s/O:DAG:DAD:AI/O:DAG:DAD:AI\(A\;\;RPLCRC\;\;\;AU\)\(A\;\;RPWPCRCCDCLCLORCWOWDSDDTSW\;\;\;SY\)/;3,$p' | sed ':a;N;$!ba;s/\n\s//g' | sed -e 's/.\{78\}/&\n /g' >> ntGen.ldif
 ldbmodify -v -H /var/lib/samba/private/sam.ldb ntGen.ldif
+
+
 ```
 **HQ-CLI**
 ```tcl
@@ -63,8 +65,6 @@ rm -rf /var/lib/sss/db/*
 sss_cache -E
 systemctl restart sssd
 ```
-###Raid
-
 **HQ-SRV**
 ```tcl
 apt-get update
@@ -95,9 +95,8 @@ mount -a
 mount -v
 touch /mnt/nfs/test
 ```
-###Chrony
-
 **ISP**
+###Chrony
 ```tcl
 apt-get install chrony -y
 cat > /etc/chrony.conf << 'EOF'
@@ -105,13 +104,62 @@ server 127.0.0.1 iburst prefer
 hwtimestamp *
 local stratum 5
 allow 0/0
-driftfile /var/lib/chrony/drift
-logdir /var/log/chrony
 EOF
 systemctl enable --now chronyd
 systemctl restart chronyd
 chronyc sources
 ```
+###Ansible
+**HQ-CLI**
+```tcl
+useradd remote_user -u 2026
+echo -e "P@ssw0rd\nP@ssw0rd" | passwd remote_user
+sed -i 's/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/' /etc/sudoers
+gpasswd -a remote_user wheel
+mkdir -p /etc/openssh
+echo "Port 2026
+PasswordAuthentication yes
+AllowUsers remote_user
+Banner /etc/openssh/banner" > /etc/openssh/sshd_config
+echo "Authorized access only!" > /etc/openssh/banner
+systemctl restart sshd
+```
+**BR-SRV**
+```tcl
+apt-get update && apt-get install ansible -y
 
+mkdir -p /etc/ansible
+
+cat > /etc/ansible/hosts << 'EOF'
+[services]
+HQ-SRV ansible_host=192.168.1.10
+HQ-CLI ansible_host=192.168.2.10
+
+[services:vars]
+ansible_user=remote_user
+ansible_port=2026
+
+[routers]
+HQ-RTR ansible_host=192.168.1.1
+BR-RTR ansible_host=192.168.3.1
+
+[routers:vars]
+ansible_user=net_admin
+ansible_password=P@ssw0rd
+ansible_connection=network_cli
+ansible_network_os=ios
+EOF
+cat > /etc/ansible/ansible.cfg << 'EOF'
+[defaults]
+ansible_python_interpreter=/usr/bin/python3
+interpreter_python=auto_silent
+ansible_host_key_checking=false
+host_key_checking=False
+EOF
+ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
+ssh-copy-id -p 2026 remote_user@192.168.1.10
+ssh-copy-id -p 2026 remote_user@192.168.2.10
+ansible all -m ping 
+```
 
 
