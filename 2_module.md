@@ -109,7 +109,9 @@ systemctl enable --now chronyd
 systemctl restart chronyd
 chronyc sources
 ```
+
 ###Ansible
+
 **HQ-CLI**
 ```tcl
 useradd remote_user -u 2026
@@ -124,6 +126,7 @@ Banner /etc/openssh/banner" > /etc/openssh/sshd_config
 echo "Authorized access only!" > /etc/openssh/banner
 systemctl restart sshd
 ```
+
 **BR-SRV**
 ```tcl
 apt-get update && apt-get install ansible -y
