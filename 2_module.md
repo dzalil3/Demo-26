@@ -125,6 +125,7 @@ MaxAuthTries 2
 PasswordAuthentication yes
 Banner /etc/openssh/banner" > /etc/openssh/sshd_config
 echo "Authorized access only" > /etc/openssh/banner
+systemctl restart sshd
 ```
 
 **BR-SRV**
