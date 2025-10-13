@@ -165,5 +165,45 @@ ssh-copy-id -p 2026 remote_user@192.168.1.10
 ssh-copy-id -p 2026 remote_user@192.168.2.10
 ansible all -m ping 
 ```
+###Docker
+
+**BR-SRV**
+```tcl
+apt-get update && apt-get install -y docker-compose docker-engine
+systemctl enable --now docker
+mount -o loop /dev/sr0 
+docker load < /media/ALTLinux/docker/site_latest.tar
+docker load < /media/ALTLinux/docker/mariadb_latest.tar
+cat > docker-compose.yml << 'EOF'
+services:
+  db:
+    image: mariadb
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: Passw0rd
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: test
+      MYSQL_PASSWORD: Passw0rd
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+  testapp:
+    image: site
+    container_name: testapp
+    environment:
+      DB_TYPE: maria
+      DB_HOST: db
+      DB_NAME: testdb
+      DB_USER: test
+      DB_PASS: Passw0rd
+      DB_PORT: 3306
+    ports:
+      - "8080:8000"
+    restart: always
+volumes:
+  db_data:
+EOF
+docker compose up -d && sleep 5 && docker exec -it db mysql -u root -p'Passw0rd' -e "CREATE DATABASE IF NOT EXISTS testdb; CREATE USER 'test'@'%' IDENTIFIED BY 'Passw0rd'; GRANT ALL PRIVILEGES ON testdb.* TO 'test'@'%'; FLUSH PRIVILEGES;"
+```
 
 
