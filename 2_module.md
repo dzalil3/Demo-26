@@ -205,5 +205,9 @@ volumes:
 EOF
 docker compose up -d && sleep 5 && docker exec -it db mysql -u root -p'Passw0rd' -e "CREATE DATABASE IF NOT EXISTS testdb; CREATE USER 'test'@'%' IDENTIFIED BY 'Passw0rd'; GRANT ALL PRIVILEGES ON testdb.* TO 'test'@'%'; FLUSH PRIVILEGES;"
 ```
-
+**HQ-CLI**
+```tcl
+systemctl restart network
+```
+>[Запустить firefox и пройти по адресу http://192.168.3.10:8080]
 
