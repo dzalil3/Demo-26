@@ -215,38 +215,49 @@ systemctl restart network
 
 **HQ-SRV**
 ```tcl
-apt-get install apache2 php8.2 apache2-mod_php8.2 mariadb-server php8.2-opcache php8.2-curl php8.2-gd php8.2-intl php8.2-mysqli php8.2-xml php8.2-xmlrpc php8.2-ldap php8.2-zip php8.2-soap php8.2-mbstring php8.2-json php8.2-xmlreader php8.2-fileinfo php8.2-sodium -y
+apt-get install apache2 php8.2 apache2-mod_php8.2 mariadb-server php8.2-opcache php8.2-curl php8.2-gd php8.2-intl php8.2-mysqli php8.2-xml php8.2-xmlrpc php8.2-ldap php8.2-zip php8.2-soap php8.2-mbstring php8.2-json php8.2-xmlreader php8.2-fileinfo php8.2-sodium expect -y
 systemctl enable --now httpd2 mysqld
-mount /dev/sr0 /mnt/additional/ -o ro
-mkdir /etc/additional
-cp -rf /mnt/additional /etc/additional
+mount -o loop /dev/sr0
 sleep 2
-mysql_secure_installation <<EOF
+expect << 'EOF'
+spawn mysql_secure_installation
 sleep 1
-y
+send "\r"          ;# current password – just Enter
 sleep 1
-P@ssw0rd
+send "n\r"         ;# unix_socket authentication
 sleep 1
-P@ssw0rd
+send "Y\r"         ;# change root password
 sleep 1
-y
+send "P@ssw0rd\r"  ;# new password
 sleep 1
-y
+send "P@ssw0rd\r"  ;# confirm password
 sleep 1
-y
+send "Y\r"         ;# remove anonymous users
 sleep 1
-y
+send "Y\r"         ;# disallow root login remotely
 sleep 1
+send "Y\r"         ;# remove test database
+sleep 1
+send "Y\r"         ;# reload privileges
+sleep 1
+expect eof
 EOF
 sleep 2
-mysql -u root -p'P@ssw0rd' -e "CREATE DATABASE webdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; CREATE USER 'webc'@'localhost' IDENTIFIED BY 'P@ssw0rd'; GRANT ALL PRIVILEGES ON webdb.* TO 'webc'@'localhost'; FLUSH PRIVILEGES;"
+mysql
+CREATE DATABASE webdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'webc'@'localhost' IDENTIFIED BY 'P@ssw0rd';
+GRANT ALL PRIVILEGES ON webdb.* TO 'webc'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+chown apache2:apache2 /var/www/html
 iconv -f UTF-16LE -t UTF-8 /media/ALTLinux/web/dump.sql -o /var/www/html/dump_utf8.sql
-mysql -u root -p'P@ssw0rd' webdb < /var/www/html/dump_utf8.sql
-mysql -u root -p'P@ssw0rd' webdb -e "SHOW TABLES;"
-chown apache:apache /var/www/html
-chown apache:apache /var/www/webdata
-cp /media/ALTLinux/web/index.php /var/www/html/index.php
-cd /var/www/html
-rm -f index.html
+mysql -u root -pP@ssw0rd webdb < /var/www/html/dump_utf8.sql
+cp -rf /media/ALTLinux/web/* /var/www/html
+rm -rf /var/www/html/index.html
+sed -i 's/\$username = "user";/\$username = "webc";/' /var/www/html/index.php
+sed -i 's/\$password = "password";/\$password = "P@ssw0rd";/' /var/www/html/index.php
+sed -i 's/\$dbname = "db";/\$dbname = "webdb";/' /var/www/html/index.php
+systemctl enable --now httpd2
 systemctl restart httpd2
+curl http://192.168.1.10
 ```
