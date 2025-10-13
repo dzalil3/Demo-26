@@ -210,4 +210,33 @@ docker compose up -d && sleep 5 && docker exec -it db mysql -u root -p'Passw0rd'
 systemctl restart network
 ```
 >[Запустить firefox и пройти по адресу http://192.168.3.10:8080]
-
+ **Веб-приложение**
+```tcl
+apt-get install apache2 php8.2 apache2-mod_php8.2 mariadb-server php8.2-opcache php8.2-curl php8.2-gd php8.2-intl php8.2-mysqli php8.2-xml php8.2-xmlrpc php8.2-ldap php8.2-zip php8.2-soap php8.2-mbstring php8.2-json php8.2-xmlreader php8.2-fileinfo php8.2-sodium -y
+systemctl enable --now httpd2 mysqld
+mount /dev/sr0 /mnt/additional/ -o ro
+mkdir /etc/additional
+cp -rf /mnt/additional /etc/additional
+mysql_secure_installation <<EOF
+y
+P@ssw0rd
+P@ssw0rd
+y
+y
+y
+y
+EOF
+mysql -u root -p'P@ssw0rd' -e "CREATE DATABASE webdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; CREATE USER 'webc'@'localhost' IDENTIFIED BY 'P@ssw0rd'; GRANT ALL PRIVILEGES ON webdb.* TO 'webc'@'localhost'; FLUSH PRIVILEGES;"
+mkdir /tmp/tmpadd
+cp -rf /mnt/additional /tmp/tmpadd
+cp -rf /tmp/tmpadd/additional/web/dump.sql /tmp/tmpadd/additional/web/dump.sql.bak
+iconv -f UTF-16LE -t UTF-8 /tmp/tmpadd/additional/web/dump.sql -o /tmp/tmpadd/additional/web/dump_utf8.sql
+mysql -u root -p'P@ssw0rd' webdb < /tmp/tmpadd/additional/web/dump_utf8.sql
+mysql -u root -p'P@ssw0rd' webdb -e "SHOW TABLES;"
+chown apache:apache /var/www/html
+chown apache:apache /var/www/webdata
+cp /tmp/tmpadd/additional/web/index.php /var/www/html/index.php
+cd /var/www/html
+rm -f index.html
+systemctl restart httpd2
+```
