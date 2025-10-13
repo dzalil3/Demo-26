@@ -230,15 +230,12 @@ y
 y
 EOF
 mysql -u root -p'P@ssw0rd' -e "CREATE DATABASE webdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; CREATE USER 'webc'@'localhost' IDENTIFIED BY 'P@ssw0rd'; GRANT ALL PRIVILEGES ON webdb.* TO 'webc'@'localhost'; FLUSH PRIVILEGES;"
-mkdir /tmp/tmpadd
-cp -rf /mnt/additional /tmp/tmpadd
-cp -rf /tmp/tmpadd/additional/web/dump.sql /tmp/tmpadd/additional/web/dump.sql.bak
-iconv -f UTF-16LE -t UTF-8 /tmp/tmpadd/additional/web/dump.sql -o /tmp/tmpadd/additional/web/dump_utf8.sql
-mysql -u root -p'P@ssw0rd' webdb < /tmp/tmpadd/additional/web/dump_utf8.sql
+iconv -f UTF-16LE -t UTF-8 /media/ALTLinux/web/dump.sql -o /var/www/html/dump_utf8.sql
+mysql -u root -p'P@ssw0rd' webdb < /var/www/html/dump_utf8.sql
 mysql -u root -p'P@ssw0rd' webdb -e "SHOW TABLES;"
 chown apache:apache /var/www/html
 chown apache:apache /var/www/webdata
-cp /tmp/tmpadd/additional/web/index.php /var/www/html/index.php
+cp /media/ALTLinux/web/index.php /var/www/html/index.php
 cd /var/www/html
 rm -f index.html
 systemctl restart httpd2
