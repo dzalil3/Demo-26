@@ -33,7 +33,8 @@ exec bash
 ```tcl
 en
 conf t
-hostname HQ-RTR
+hostname hq-rtr
+ip domain-name au-team.irpo
 interface int0
 description "to isp"
 ip address 172.16.1.2/28
@@ -139,7 +140,8 @@ exit
 ```tcl
 en
 conf t
-hostname BR-RTR
+hostname br-rtr
+ip domain-name au-team.irpo
 interface int0
 description "to isp"
 ip address 172.16.2.2/28
@@ -199,7 +201,7 @@ write memory
 ```
 **HQ-SRV**
 ```tcl
-hostnamectl set-hostname HQ-SRV.au-team.irpo
+hostnamectl set-hostname hq-srv.au-team.irpo
 mkdir -p /etc/net/ifaces/ens20
 echo "BOOTPROTO=static
 CONFIG_IPV4=yes
@@ -209,12 +211,12 @@ echo "192.168.1.10/27" > /etc/net/ifaces/ens20/ipv4address
 echo "default via 192.168.1.1" > /etc/net/ifaces/ens20/ipv4route
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 systemctl restart network
-useradd remote_user -u 2026
+useradd sshuser -u 2026
 sed -i 's/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/' /etc/sudoers
-echo -e "P@ssw0rd\nP@ssw0rd" | passwd remote_user
-gpasswd -a remote_user wheel
+echo -e "P@ssw0rd\nP@ssw0rd" | passwd sshuser
+gpasswd -a sshuser wheel
 echo "Port 2026
-AllowUsers remote_user
+AllowUsers sshuser
 MaxAuthTries 2
 PasswordAuthentication yes
 Banner /etc/openssh/banner" > /etc/openssh/sshd_config
@@ -243,7 +245,7 @@ exec bash
 ```
 **BR-SRV**
 ```tcl
-hostnamectl set-hostname BR-SRV.au-team.irpo
+hostnamectl set-hostname br-srv.au-team.irpo
 mkdir -p /etc/net/ifaces/ens20
 echo "BOOTPROTO=static
 CONFIG_IPV4=yes
@@ -253,13 +255,13 @@ echo "192.168.3.10/28" > /etc/net/ifaces/ens20/ipv4address
 echo "default via 192.168.3.1" > /etc/net/ifaces/ens20/ipv4route
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 systemctl restart network
-useradd remote_user -u 2026
+useradd sshuser -u 2026
 sed -i 's/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/' /etc/sudoers
-echo -e "P@ssw0rd\nP@ssw0rd" | passwd remote_user
-gpasswd -a remote_user wheel
+echo -e "P@ssw0rd\nP@ssw0rd" | passwd sshuser
+gpasswd -a sshuser wheel
 mkdir -p /etc/openssh
 echo "Port 2026
-AllowUsers remote_user
+AllowUsers sshuser
 MaxAuthTries 2
 PasswordAuthentication yes
 Banner /etc/openssh/banner" > /etc/openssh/sshd_config
@@ -270,7 +272,7 @@ exec bash
 ```
 **HQ-CLI**
 ```tcl
-hostnamectl set-hostname HQ-CLI.au-team.irpo
+hostnamectl set-hostname hq-cli.au-team.irpo
 mkdir -p /etc/net/ifaces/ens20
 echo "BOOTPROTO=dhcp
 TYPE=eth" > /etc/net/ifaces/ens20/options
