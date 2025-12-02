@@ -15,8 +15,7 @@ filter = sshd
 maxretry = 2
 backend = systemd
 EOF
-systemctl enable --now fail2ban
-systemctl restart fail2ban
+systemctl enable --now fail2ban && systemctl restart fail2ban
 fail2ban-client status sshd
 cat /var/log/fail2ban.log
 ```
@@ -24,9 +23,7 @@ cat /var/log/fail2ban.log
 **HQ-CLI**
 
 ```tcl
-ssh sshuser@192.168.1.10 -p 2026
-systemctl enable --now fail2ban && systemctl restart fail2ban
-fail2ban-client status sshd
-cat /var/log/fail2ban.log
-ssh sshuser@192.168.1.10 -p 2026
+systemctl restart network
+ssh -o StrictHostKeyChecking=no sshuser@192.168.1.10 -p 2026
+ssh -o StrictHostKeyChecking=no sshuser@192.168.1.10 -p 2026
 ```
