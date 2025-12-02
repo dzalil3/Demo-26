@@ -3,7 +3,6 @@
 **HQ-SRV**
 ```tcl
 apt-get update && apt-get install python3-module-systemd fail2ban -y
-vim /etc/fail2ban/jail.d/sshd.local
 cat > /etc/fail2ban/jail.d/sshd.local << 'EOF'
 [DEFAULT]
 bantime = 60
@@ -19,6 +18,7 @@ EOF
 systemctl enable --now fail2ban
 systemctl restart fail2ban
 fail2ban-client status sshd
+cat /var/log/fail2ban.log
 ```
 
 **HQ-CLI**
